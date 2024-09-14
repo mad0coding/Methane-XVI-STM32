@@ -1,0 +1,98 @@
+更新时间：2021.5.14
+版本：2.0
+2.0版说明：
+  2.0版对1.0版仅仅作了头文件的内容扩充，未修改原有内容，故可直接替换1.0版，不会带来编译错误
+  也因此，对1.0版已有的内容不再重复说明，仅说明增加内容
+    增加的内容为寄存器位带操作，即已知GPIO的输入、输出寄存器(ODR、IDR)的地址，对其进行直接访问，将其值当作一个操作数
+    如对PB10操作，若为输出，则可以 输出低电平：PBout(10)=0;输出高电平：PBout(10)=1;
+    若为输入，则可以a=PBin(10);
+
+
+
+1.0版说明：
+时间：2021.1.26
+版本：1.0
+说明:
+    此封装为基于stm32f1固件库的对GPIO的配置、输入、输出的封装
+    包含stm32f1固件库头文件"stm32f10x.h"和布尔型变量的头文件"stdbool.h"
+    此封装共有5个可供调用的函数和1个工具函数(被前几个函数调用)
+关于5个函数:
+一、引脚配置
+void GPIOpinInit(char* PinName,char speed,char mode);
+1、
+    PinName为引脚名，组成为大写字母和数字，如"A06"、"B1"、"C13"
+        注意：双引号不可省略
+        另外"B1"或"B01"的写法均合法且是等价的，但是在双引号内加入空格不合法，以下均同
+2、
+    speed为速度，单位为MHz(无需输入)，可取值为2、10、50
+3、
+    mode为模式，取值与对应功能如下:
+        'A':模拟输入GPIO_Mode_AIN
+        'F':浮空输入GPIO_Mode_IN_FLOATING
+        'D':下拉输入GPIO_Mode_IPD
+        'U':上拉输入GPIO_Mode_IPU
+        'O':开漏输出GPIO_Mode_Out_OD
+        'P':推挽输出GPIO_Mode_Out_PP
+        'o':复用开漏输出GPIO_Mode_AF_OD
+        'p':复用推挽输出GPIO_Mode_AF_PP
+            注意：单引号不可省略
+
+用法示例:
+1、(直接写引脚名)
+    GPIOpinInit("C13",50,'O');
+    GPIOpinInit("B1",2,'F');
+2、(用宏定义替换引脚名)
+    #define     led0       "C13"
+    #define     key      "B1"
+    GPIOpinInit(led0,50,'O');
+    GPIOpinInit(key,2,'F');
+
+二、输出
+void Output(char* PinName,bool state);
+1、
+    PinName为引脚名，说明同上
+2、
+    state为输出电平，置高可写1或high或HIGH，置低可写0或low或LOW
+        要注意是否选择了正确的模式
+
+用法示例:
+1、
+    Output("C13",0);
+2、
+    #define     led0       "C13"
+    Output(led0,LOW);
+
+三、置高
+void High(char* PinName);
+    输入PinName即可输出高电平，如High("B0"); 要注意是否选择了正确的模式
+
+四、置低
+void Low(char* PinName);
+    输入PinName即可输出低电平，如Low("B0"); 要注意是否选择了正确的模式
+
+五、读取
+bool Read(char* PinName);
+    输入PinName即可读取引脚电平，要注意是否选择了正确的模式
+    用法示例:bool message=Read("B1");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

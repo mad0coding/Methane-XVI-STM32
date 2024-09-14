@@ -1,0 +1,81 @@
+关于USARTcontrol的简要说明
+
+时间：2021.5.14
+
+串口配置函数：（串口外设和GPIO初始化及相关参数设定）
+void USART_Config(u8 UsartN,int baudrate,u8 Ppro,u8 Spro);
+  参数说明：
+    UsartN为串口选择，为1~5
+    baudrate为波特率，常用115200
+    Ppro为串口中断主优先级，对中断优先级不关心时可设为1
+    Spro为串口中断子优先级，对中断优先级不关心时可设为1
+  注意：
+    小容量芯片有USART1和2，中等容量芯片增设USART3，大容量芯片增设UART4和5
+    而此函数不检查是否使用了当前芯片所没有的串口，故编程时须注意
+  使用例：
+    USART_Config(1,115200,1,1);
+
+
+串口发送一个字节：
+void Usart_SendByte( USART_TypeDef * pUSARTx, uint8_t ch);
+  使用例：
+    Usart_SendByte(USART1,a);//a一般是8位整数，若不是将自动强制转换或报错
+    Usart_SendByte(USART3,-16);//可以发送负数，会当成正数发送，取决于接收方的理解
+    Usart_SendByte(UART4,25);//注意串口4和5是UART而不是USART
+
+
+串口发送8位的数组：
+void Usart_SendArray( USART_TypeDef * pUSARTx, uint8_t *array, uint16_t num);
+  使用例：
+    Usart_SendArray(USART1,b,10);//b是数组，10是数组长度
+
+
+串口发送字符串：
+void Usart_SendString( USART_TypeDef * pUSARTx, char *str);
+  使用例：
+    Usart_SendString(USART1,c);//c是字符串，此函数自动判断是否到达字符串默认终止符，故无需输入长度
+
+
+串口发送一个16位数：
+void Usart_SendHalfWord( USART_TypeDef * pUSARTx, uint16_t ch);
+  此函数将16位整数分两次发送，先高8位后低8位
+  用法与Usart_SendByte基本相同
+
+
+关于串口中断：
+  已将串口1~5的中断服务程序写于USARTcontrol.c中，暂时为注释状态，可以启用
+  函数体基本为空，仅接收串口收到的数据，不做任何处理即退出
+  这几个函数同时存在并不会报错，但会报ucTemp未使用的警告，原因即仅接收数据但不处理
+  因此为了避免不必要的警告，平时应使不用的中断服务程序保持注释状态，仅启用需要的
+  不过在某串口可能发生中断时必须启用相应的中断服务程序，否则会进入默认中断服务程序中死循环
+
+
+关于c库函数重定向：
+  #define printf_USARTx		USART2	//重定向printf的串口
+  #define scanf_USARTx		USART1	//重定向scanf等的串口
+    c库函数重定向不能指向多个串口，需选择某一个
+    此宏定义可根据需要修改
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

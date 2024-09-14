@@ -1,0 +1,22 @@
+CustomHID添加HID：
+在配置描述符中添加HID接口部分，并修改总接口数
+添加HID报文描述符
+USBD_CUSTOM_HID_Init函数中添加对HID的端点的启用，并置位其标志位
+USBD_CUSTOM_HID_DeInit函数中添加对HID的端点的关闭，并清零其标志位
+USBD_CUSTOM_HID_Setup函数中的case USB_REQ_GET_DESCRIPTOR分支下：
+检查req->wIndex等于哪个接口来判断是要获取谁的报文描述符，并将指针和长度赋值
+创建USBD_HID_SendReport函数，相比USBD_CUSTOM_HID_SendReport修改其端点
+USBD_LL_Init函数中添加一个HAL_PCDEx_PMAConfig函数以配置HID端点的PMA
+
+
+
+HAL改为HAL-LL：
+加入Libraries文件夹
+将Libraries文件夹和User文件夹加入工程文件夹
+keil左侧添加FWLIB组，加入.\Libraries\STM32F10x_StdPeriph_Driver\src中的c文件
+添加User组，添加LL_convert文件等
+Include Paths内添加需要的：
+.\Libraries\STM32F10x_StdPeriph_Driver\inc
+.\User本身及其下的各文件夹
+
+
